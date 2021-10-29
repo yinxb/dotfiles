@@ -43,7 +43,7 @@ Plug 'kyazdani42/nvim-web-devicons'
 Plug 'kyazdani42/nvim-tree.lua'
 
 " Color theme that supports TreeSitter
-" Plug 'mhartington/oceanic-next'
+Plug 'mhartington/oceanic-next'
 Plug 'projekt0n/github-nvim-theme'
 
 " Tabline 
@@ -66,6 +66,8 @@ Plug 'yamatsum/nvim-cursorline'
 " Add indentations
 Plug 'lukas-reineke/indent-blankline.nvim'
 
+" Register
+Plug 'tversteeg/registers.nvim', { 'branch': 'main' }
 " Plug 'folke/which-key.nvim'
 
 call plug#end()
@@ -93,7 +95,7 @@ set cursorline
 set nowrap
 set mouse=a
 " hide the ~ 
-set fillchars=eob:\ 
+set fillchars=eob:\ ,fold:\ 
 " use %y to copy text to clipboard
 set clipboard=unnamed
 
@@ -121,17 +123,17 @@ endif
 
 " Theme
 syntax enable
-" colorscheme OceanicNext
+colorscheme OceanicNext
 
-nmap <space>1 :1b<CR>
-nmap <space>2 :2b<CR>
-nmap <space>3 :3b<CR>
-nmap <space>4 :4b<CR>
-nmap <space>5 :5b<CR>
-nmap <space>6 :6b<CR>
-nmap <space>7 :7b<CR>
-nmap <space>8 :8b<CR>
-nmap <space>9 :9b<CR>
+" nmap <space>1 :1b<CR>
+" nmap <space>2 :2b<CR>
+" nmap <space>3 :3b<CR>
+" nmap <space>4 :4b<CR>
+" nmap <space>5 :5b<CR>
+" nmap <space>6 :6b<CR>
+" nmap <space>7 :7b<CR>
+" nmap <space>8 :8b<CR>
+" nmap <space>9 :9b<CR>
 nmap <space>- :bprevious!<CR>
 nmap <space>+ :bnext!<CR>
 nmap <space>= :bnext!<CR>
@@ -262,8 +264,23 @@ nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 " Nvim-tree
 let g:nvim_tree_ignore = [ '.git', 'node_modules', '.cache' ] "empty by default
 let g:nvim_tree_gitignore = 1
-let g:nvim_tree_highlight_opened_files = 1
-
+let g:nvim_tree_git_hl = 1
+let g:nvim_tree_window_picker_exclude = {
+    \   'filetype': [
+    \     'notify',
+    \     'packer',
+    \     'qf'
+    \   ],
+    \   'buftype': [
+    \     'terminal'
+    \   ]
+    \ }
+let g:nvim_tree_show_icons = {
+    \ 'git': 0,
+    \ 'folders': 1,
+    \ 'files': 1,
+    \ 'folder_arrows': 1,
+    \ }
 nnoremap <C-n> :NvimTreeToggle<CR>
 lua << EOF
 require'nvim-tree'.setup {
@@ -308,13 +325,15 @@ require('lualine').setup {
     lualine_a = {
      {'mode', fmt = function(str) return str:sub(1,1) end}},
     -- lualine_x = {'encoding', 'fileformat', 'filetype'},
-    lualine_x = {'lsp_progress'},
+    lualine_b = {{'FugitiveHead', fmt = function(str) return " " .. str end}, 'diff', {'diagnostics', sources={'nvim_lsp'}}},
+    lualine_c = {'lsp_progress'},
+    lualine_x = {'filename'},
   },
   inactive_sections = {
     lualine_a = {},
     lualine_b = {},
     lualine_c = {'filename'},
-    lualine_x = {'location'},
+    lualine_x = {'location','filename'},
     lualine_y = {},
     lualine_z = {}
   },
@@ -322,45 +341,68 @@ require('lualine').setup {
 }
 EOF
 
-nnoremap <silent><leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
-nnoremap <silent><leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
-nnoremap <silent><leader>3 <Cmd>BufferLineGoToBuffer 3<CR>
-nnoremap <silent><leader>4 <Cmd>BufferLineGoToBuffer 4<CR>
-nnoremap <silent><leader>5 <Cmd>BufferLineGoToBuffer 5<CR>
-nnoremap <silent><leader>6 <Cmd>BufferLineGoToBuffer 6<CR>
-nnoremap <silent><leader>7 <Cmd>BufferLineGoToBuffer 7<CR>
-nnoremap <silent><leader>8 <Cmd>BufferLineGoToBuffer 8<CR>
-nnoremap <silent><leader>9 <Cmd>BufferLineGoToBuffer 9<CR>
+nnoremap <silent><space>1 <Cmd>BufferLineGoToBuffer 1<CR>
+nnoremap <silent><space>2 <Cmd>BufferLineGoToBuffer 2<CR>
+nnoremap <silent><space>3 <Cmd>BufferLineGoToBuffer 3<CR>
+nnoremap <silent><space>4 <Cmd>BufferLineGoToBuffer 4<CR>
+nnoremap <silent><space>5 <Cmd>BufferLineGoToBuffer 5<CR>
+nnoremap <silent><space>6 <Cmd>BufferLineGoToBuffer 6<CR>
+nnoremap <silent><space>7 <Cmd>BufferLineGoToBuffer 7<CR>
+nnoremap <silent><space>8 <Cmd>BufferLineGoToBuffer 8<CR>
+nnoremap <silent><space>9 <Cmd>BufferLineGoToBuffer 9<CR>
 lua << EOF
+local padding = " "
 require("bufferline").setup{
   options = {
-   numbers = "both",
+   -- numbers = "both",
+   numbers = function(opts) return string.format('%s',opts.ordinal) end,
+   -- tab_size = 18,
    offsets = {{
       filetype = "NvimTree",
-      text = "File Explorer", 
+      text = "EXPLORER", 
       highlight = "Directory",
       text_align = "center",
-    }}
+    }},
+    -- separator_style = {"" .. padding, "" .. padding},
+    separator_style = "thick",
+    always_show_bufferline = false,
+    -- enforce_regular_tabs = true,
   },
   
 }
 EOF
 
 lua <<EOF
-require("github-theme").setup({
-  theme_style = "dimmed",
-})
+-- require("github-theme").setup({
+--  theme_style = "auto",
+-- })
 EOF
 
 lua <<EOF
 require("toggleterm").setup{
   open_mapping = [[<c-\>]],
+  direction = 'float',
+  float_opts = {
+    border = 'double',
+    winblend = 3,
+    highlights = {
+      border = "Normal",
+      background = "Normal",
+    }
+  }
 }
 EOF
 
 " let g:auto_session_pre_save_cmds = ["tabdo NvimTreeClose"]
 lua <<EOF
 require("auto-session").setup{
-  pre_save_cmds = {"tabdo NvimTreeClose"}
+  log_level = 'error',
+  pre_save_cmds = {"tabdo NvimTreeClose", "tabdo ToggleTermCloseAll"}
 }
 EOF
+
+" below need to be kept in the bottom
+set noshowmode
+set noshowcmd
+set noruler
+
