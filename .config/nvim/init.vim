@@ -35,7 +35,8 @@ Plug 'nvim-telescope/telescope.nvim'
 
 " Git
 Plug 'tpope/vim-fugitive'
-
+" Git Signs
+Plug 'lewis6991/gitsigns.nvim'
 " Icons, required by nvim-tree, bufferline and lualine
 Plug 'kyazdani42/nvim-web-devicons'
 
@@ -45,6 +46,7 @@ Plug 'kyazdani42/nvim-tree.lua'
 " Color theme that supports TreeSitter
 Plug 'mhartington/oceanic-next'
 Plug 'projekt0n/github-nvim-theme'
+Plug 'Mofiqul/vscode.nvim'
 
 " Tabline 
 Plug 'akinsho/bufferline.nvim'
@@ -123,7 +125,10 @@ endif
 
 " Theme
 syntax enable
-colorscheme OceanicNext
+" colorscheme OceanicNext
+let g:vscode_style = "dark"
+colorscheme vscode
+
 
 " nmap <space>1 :1b<CR>
 " nmap <space>2 :2b<CR>
@@ -305,7 +310,8 @@ require'nvim-tree'.setup {
       custom_only = false,
       -- list of mappings to set on the tree manually
       list = {}
-    }
+    },
+
   }
 }
 EOF
@@ -314,7 +320,7 @@ lua << EOF
 require('lualine').setup {
   options = {
     -- theme = 'OceanicNext',
-    theme = 'github',
+    theme = 'vscode',
     -- section_separators = { left = '', right = ''},
     -- component_separators = { left = '', right = ''}
     component_separators = '',
@@ -322,12 +328,13 @@ require('lualine').setup {
     -- disabled_filetypes = {'NvimTree'}
   },
   sections = {
-    lualine_a = {
-     {'mode', fmt = function(str) return str:sub(1,1) end}},
+    -- lualine_a = {{'mode', fmt = function(str) return str:sub(1,1) end}},
+    -- other icons:  ﯎  
+    lualine_a = {{'mode', fmt = function(str) if str == "NORMAL" then return "" elseif str == "INSERT" then return "" elseif str == "VISUAL" or str == "V-LINE" then return "﯎" elseif str == "COMMAND" then return "" else return str end end}},
     -- lualine_x = {'encoding', 'fileformat', 'filetype'},
-    lualine_b = {{'FugitiveHead', fmt = function(str) return " " .. str end}, 'diff', {'diagnostics', sources={'nvim_lsp'}}},
+    lualine_b = {{'FugitiveHead', fmt = function(str) if str == "" then return "" else return " " .. str end end}, 'diff', {'diagnostics', sources={'nvim_lsp'}}},
     lualine_c = {'lsp_progress'},
-    lualine_x = {'filename'},
+    lualine_x = {{'filename', path = 1}},
   },
   inactive_sections = {
     lualine_a = {},
@@ -351,24 +358,25 @@ nnoremap <silent><space>7 <Cmd>BufferLineGoToBuffer 7<CR>
 nnoremap <silent><space>8 <Cmd>BufferLineGoToBuffer 8<CR>
 nnoremap <silent><space>9 <Cmd>BufferLineGoToBuffer 9<CR>
 lua << EOF
-local padding = " "
 require("bufferline").setup{
   options = {
+	  -- ﱤ ﳗ                ⭘ וּ ﰬ  ﲗ ﲔ ﲕ ﲖ  ﰲ   龎  﫜      ﳂ    ﯎       ﮋ   
+   -- indicator_icon = 'ﰲ ',
    -- numbers = "both",
    numbers = function(opts) return string.format('%s',opts.ordinal) end,
-   -- tab_size = 18,
    offsets = {{
       filetype = "NvimTree",
-      text = "EXPLORER", 
+      text = " EXPLORER", 
       highlight = "Directory",
-      text_align = "center",
+      text_align = "left",
     }},
-    -- separator_style = {"" .. padding, "" .. padding},
-    separator_style = "thick",
-    always_show_bufferline = false,
+    separator_style = "slant",
+    -- always_show_bufferline = false,
     -- enforce_regular_tabs = true,
+    show_buffer_icons = false,
+    show_close_icon = false,
   },
-  
+ 
 }
 EOF
 
@@ -399,6 +407,10 @@ require("auto-session").setup{
   log_level = 'error',
   pre_save_cmds = {"tabdo NvimTreeClose", "tabdo ToggleTermCloseAll"}
 }
+EOF
+
+lua <<EOF
+require('gitsigns').setup()
 EOF
 
 " below need to be kept in the bottom
