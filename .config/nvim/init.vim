@@ -285,9 +285,9 @@ nnoremap <silent> <F2>  <cmd>lua vim.lsp.buf.rename()<CR>
 
 " Set updatetime for CursorHold
 " 300ms of no cursor movement to trigger CursorHold
-set updatetime=300
+" set updatetime=300
 " Show diagnostic popup on cursor hold
-autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+" autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
 
 " Goto previous/next diagnostic warning/error
 nnoremap <silent> g[ <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
@@ -576,7 +576,7 @@ EOF
 lua <<EOF
 require("auto-session").setup{
   log_level = 'error',
-  pre_save_cmds = {"tabdo NvimTreeClose", "tabdo ToggleTermCloseAll", "tabdo SymbolsOutlineClose"}
+  pre_save_cmds = {"tabdo NvimTreeClose", "tabdo ToggleTermCloseAll", "tabdo SymbolsOutlineClose", "tabdo TroubleClose"}
 }
 EOF
 
