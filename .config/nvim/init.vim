@@ -79,6 +79,11 @@ Plug 'folke/trouble.nvim'
 " Comment
 Plug 'numToStr/Comment.nvim'
 
+" Debug
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'leoluz/nvim-dap-go'
+
 call plug#end()
 
 " TreeSitter
@@ -115,11 +120,21 @@ set fillchars=eob:\ ,fold:\
 " use %y to copy text to clipboard
 set clipboard=unnamed
 
+set diffopt+=algorithm:histogram
+
 " fold by expr provided by TreeSitter
 set foldmethod=expr
 set foldexpr=nvim_treesitter#foldexpr()
 set nofoldenable "disable fold when open file when opening
 set foldlevel=99
+
+" ignore case when search
+set ignorecase
+" if there is capital, then don't ignore
+set smartcase
+
+" add a ruler line at column 80
+" set colorcolumn=80
 
 " Set completeopt to have a better completion experience
 " :help completeopt
@@ -261,9 +276,59 @@ local opts = {
 }
 
 require('rust-tools').setup(opts)
+
+lspconfig = require "lspconfig"
+lspconfig.gopls.setup {
+	cmd = {"gopls", "serve"},
+	capabilities = capabilities,
+	settings = {
+		gopls = {
+			analyses = {
+				unusedparams = true,
+				},
+			staticcheck = true,
+			},
+		},
+	}
 EOF
 
 autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 200)
+
+lua <<EOF
+  function goimports(timeout_ms)
+    local context = { only = { "source.organizeImports" } }
+    vim.validate { context = { context, "t", true } }
+
+    local params = vim.lsp.util.make_range_params()
+    params.context = context
+
+    -- See the implementation of the textDocument/codeAction callback
+    -- (lua/vim/lsp/handler.lua) for how to do this properly.
+    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
+    if not result or next(result) == nil then return end
+    local actions = result[1].result
+    if not actions then return end
+    local action = actions[1]
+
+    -- textDocument/codeAction can return either Command[] or CodeAction[]. If it
+    -- is a CodeAction, it can have either an edit, a command or both. Edits
+    -- should be executed first.
+    if action.edit or type(action.command) == "table" then
+      if action.edit then
+        vim.lsp.util.apply_workspace_edit(action.edit)
+      end
+      if type(action.command) == "table" then
+        vim.lsp.buf.execute_command(action.command)
+      end
+    else
+      vim.lsp.buf.execute_command(action)
+    end
+  end
+EOF
+
+autocmd BufWritePre *.go lua goimports(1000)
+autocmd BufWritePre *.go lua vim.lsp.buf.format
+autocmd FileType go setlocal omnifunc=v:lua.vim.lsp.omnifunc
 
 " Disable nvim-cmp on the TelescopePrompt buffer
 autocmd FileType TelescopePrompt lua require('cmp').setup.buffer { enabled = false }
@@ -281,6 +346,8 @@ nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <F2>  <cmd>lua vim.lsp.buf.rename()<CR>
+inoremap <silent> <F2>  <cmd>lua vim.lsp.buf.rename()<CR>
+vnoremap <silent> <F2>  <cmd>lua vim.lsp.buf.rename()<CR>
 " ================================================================================
 
 " Set updatetime for CursorHold
@@ -305,7 +372,8 @@ let g:nvim_tree_window_picker_exclude = {
     \     'notify',
     \     'packer',
     \     'qf',
-    \     'Outline'
+    \     'Outline',
+    \     'Trouble',
     \   ],
     \   'buftype': [
     \     'terminal'
@@ -418,7 +486,7 @@ lua << EOF
 
 local function custom_location()
 --	return [[Ln %l,Col %c]]
-	return [[Col %c]]
+	return [[Col:%c]]
 end
 
 local colors = {
@@ -513,7 +581,7 @@ require('lualine').setup {
     -- component_separators = { left = '', right = ''}
     component_separators = '',
     section_separators = '',
-    disabled_filetypes = {'Outline','NvimTree', 'ToggleTerm'}
+    disabled_filetypes = {'Outline','NvimTree', 'ToggleTerm', 'Trouble', 'dapui_watches', 'dapui_stacks', 'dapui_breakpoints', 'dapui_scopes', 'dap-repl'}
   },
   sections = sections,
   inactive_sections = inactive_sections, 
@@ -546,7 +614,7 @@ require("bufferline").setup{
     -- separator_style = "slant",
     -- always_show_bufferline = false,
     -- enforce_regular_tabs = true,
-    show_buffer_icons = true,
+    show_buffer_icons = false,
     show_close_icon = false,
   },
  }
@@ -561,6 +629,7 @@ EOF
 lua <<EOF
 require("toggleterm").setup{
   open_mapping = [[<c-\>]],
+  close_on_exit = true,
   direction = 'float',
   float_opts = {
     border = 'double',
@@ -576,7 +645,7 @@ EOF
 lua <<EOF
 require("auto-session").setup{
   log_level = 'error',
-  pre_save_cmds = {"tabdo NvimTreeClose", "tabdo ToggleTermCloseAll", "tabdo SymbolsOutlineClose", "tabdo TroubleClose"}
+  pre_save_cmds = {"tabdo NvimTreeClose", "tabdo SymbolsOutlineClose", "tabdo TroubleClose"}
 }
 EOF
 
@@ -646,11 +715,11 @@ EOF
 
 " Vim Script
 nnoremap <leader>xx <cmd>TroubleToggle<cr>
-nnoremap <leader>xw <cmd>TroubleToggle lsp_workspace_diagnostics<cr>
-nnoremap <leader>xd <cmd>TroubleToggle lsp_document_diagnostics<cr>
-nnoremap <leader>xq <cmd>TroubleToggle quickfix<cr>
-nnoremap <leader>xl <cmd>TroubleToggle loclist<cr>
-nnoremap gR <cmd>TroubleToggle lsp_references<cr>
+nnoremap <leader>gw <cmd>TroubleToggle lsp_workspace_diagnostics<cr>
+nnoremap <leader>gd <cmd>TroubleToggle lsp_document_diagnostics<cr>
+nnoremap <leader>gq <cmd>TroubleToggle quickfix<cr>
+nnoremap <leader>gl <cmd>TroubleToggle loclist<cr>
+nnoremap gr <cmd>TroubleToggle lsp_references<cr>
 lua << EOF
   require("trouble").setup {
     -- your configuration comes here
@@ -662,6 +731,22 @@ EOF
 lua <<EOF
 require('Comment').setup()
 EOF
+
+nnoremap <silent> <F9> :lua require'dap'.continue()<CR>
+nnoremap <silent> <F8> :lua require'dap'.step_over()<CR>
+nnoremap <silent> <F7> :lua require'dap'.step_into()<CR>
+nnoremap <silent> <F12> :lua require'dap'.step_out()<CR>
+nnoremap <silent> <leader>b :lua require'dap'.toggle_breakpoint()<CR>
+nnoremap <silent> <leader>B :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
+nnoremap <silent> <leader>lp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
+nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
+nnoremap <silent> <leader>dl :lua require'dap'.run_last()<CR>
+
+lua <<EOF
+require('dap-go').setup()
+require("dapui").setup()
+EOF
+
 " below need to be kept in the bottom
 set noshowmode
 set noshowcmd
