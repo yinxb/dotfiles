@@ -1,0 +1,71 @@
+"" Source your .vimrc
+"source ~/.vimrc
+
+" Change mapleader
+" let mapleader = ' '
+
+" Use the OS clipboard by default
+set clipboard=unnamed,unnamedplus
+
+" Enable native idea paste action for put operations
+set clipboard+=ideaput
+
+" Show the current mode
+set showmode
+
+"" -- Suggested options --
+" Show a few lines of context around the cursor. Note that this makes the
+" text scroll if you mouse-click near the start or end of the window.
+set scrolloff=5
+
+" Do incremental searching.
+set incsearch
+
+" Don't use Ex mode, use Q for formatting.
+map Q gq
+
+
+"" -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
+"" Map \r to the Reformat Code action
+"map \r <Action>(ReformatCode)
+
+"" Map <leader>d to start debug
+"map <leader>d <Action>(Debug)
+
+"" Map \b to toggle the breakpoint on the current line
+"map \b <Action>(ToggleLineBreakpoint)
+
+
+" Find more examples here: https://jb.gg/share-ideavimrc
+set relativenumber
+set number
+
+set ignorecase
+set smartcase
+" remap leader to space
+map <space>D <Action>(Debug)
+map <space>R <Action>(Run)
+map <space>B <Action>(CompileDirty)
+
+nnoremap <space>ff :action SearchEverywhere<CR>
+nnoremap <space>fg :action FindInPath<CR>
+nnoremap gr :action FindUsages<CR>
+nnoremap ga :action ShowIntentionActions<CR>
+vnoremap ga :action ShowIntentionActions<CR>
+
+nnoremap g] :action GotoNextError<CR>
+nnoremap g[ :action GotoPreviousError<CR>
+nmap <Leader>f <Action>(ReformatCode)
+
+nmap <space>1 <Action>(GoToTab1)
+nmap <space>2 <Action>(GoToTab2)
+nmap <space>3 <Action>(GoToTab3)
+nmap <space>4 <Action>(GoToTab4)
+nmap <space>5 <Action>(GoToTab5)
+nmap <space>6 <Action>(GoToTab6)
+nmap <space>7 <Action>(GoToTab7)
+nmap <space>8 <Action>(GoToTab8)
+nmap <space>9 <Action>(GoToTab9)
+
+" nmap <space>= <Action>(NextTab)
+" nmap <space>- <Action>(PreviousTab)
