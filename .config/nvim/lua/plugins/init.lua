@@ -1,0 +1,17 @@
+require("plugins.packer")
+
+require("plugins.nvim-treesitter")
+require("plugins.telescope")
+require("plugins.nvim-cmp")
+require("plugins.lspconfig")
+require("plugins.nvim-tree")
+require("plugins.nvim-gps")
+require("plugins.lualine")
+require("plugins.bufferline")
+require("plugins.toggleterm")
+require("plugins.auto-session")
+require("plugins.symbols-outline")
+require("plugins.trouble")
+require("plugins.dap")
+require("plugins.vscode")
+
