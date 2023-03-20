@@ -2,14 +2,14 @@ require("keymaps")
 
 require("bufferline").setup{
   options = {
-   numbers = function(opts) return string.format('%s',opts.ordinal) end,
+   numbers = function(opts) return string.format('%s', opts.ordinal) end,
    offsets = {{
       filetype = "NvimTree",
       text = " EXPLORER", 
       highlight = "Directory",
       text_align = "left",
     }},
-    -- separator_style = "slant",
+    separator_style = "thin",
     -- always_show_bufferline = false,
     -- enforce_regular_tabs = true,
     show_buffer_icons = false,

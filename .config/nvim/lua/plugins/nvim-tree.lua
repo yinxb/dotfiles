@@ -1,49 +1,14 @@
 require('keymaps')
 
--- vim.g.nvim_tree_gitignore = 1
-vim.g.nvim_tree_git_hl = 1
-
-vim.g.nvim_tree_show_icons = {
-	['git'] = 1,
-	['folders'] = 1,
-	['files'] = 1,
-	['folder_arrows'] = 1,
-}
-vim.g.nvim_tree_icons = {
-	['default'] = '',
-	['symlink'] = '',
-        ['git'] = {
-       		['unstaged'] = "",
-       		['staged'] = "S",
-       		['unmerged'] = "",
-       		['renamed'] = "➜",
-       		['untracked'] = "U",
-       		['deleted'] = "",
-       		['ignored'] = "◌"
-       	},
-     	['folder'] = {
-       		['arrow_open'] = "",
-       		['arrow_closed'] = "",
-       		['default'] = "",
-       		['open'] = "",
-       		['empty'] = "",
-       		['empty_open'] = "",
-       		['symlink'] = "",
-       		['symlink_open'] = "",
-       	}
-}
-
-
 require'nvim-tree'.setup {
         -- disables netrw completely
+        auto_reload_on_write = true,
         disable_netrw  = true,
         hijack_netrw   = true,
         open_on_setup  = false,
         view = {
                 -- width of the window, can be either a number (columns) or a string in `%`, for left or right side placement
                 width = 30,
-                -- height of the window, can be either a number (columns) or a string in `%`, for top or bottom side placement
-                height = 30,
                 -- Hide the root path of the current folder on top of the tree 
                 hide_root_folder = false,
                 -- side of the tree, can be one of 'left' | 'right' | 'top' | 'bottom'
@@ -56,6 +21,34 @@ require'nvim-tree'.setup {
                         list = {}
                 },
                 
+        },
+        renderer = {
+                highlight_git = true,
+                icons = {
+                        glyphs = {
+                                default = "",
+                                symlink = "",
+                                folder = {
+                                  arrow_closed = "",
+                                  arrow_open = "",
+                                  default = "",
+                                  open = "",
+                                  empty = "",
+                                  empty_open = "",
+                                  symlink = "",
+                                  symlink_open = "",
+                                },
+                                git = {
+                                  unstaged = "",
+                                  staged = "S",
+                                  unmerged = "",
+                                  renamed = "➜",
+                                  untracked = "U",
+                                  deleted = "",
+                                  ignored = "◌",
+                                }, 
+                        }
+                }
         },
         filters = {
                 dotfiles = false,

@@ -1,17 +1,18 @@
 require("plugins.packer")
-
+-- put theme in the front
+require("plugins.vscode")
 require("plugins.nvim-treesitter")
 require("plugins.telescope")
 require("plugins.nvim-cmp")
+require("plugins.nvim-navic")
 require("plugins.lspconfig")
 require("plugins.nvim-tree")
-require("plugins.nvim-gps")
 require("plugins.lualine")
 require("plugins.bufferline")
 require("plugins.toggleterm")
 require("plugins.auto-session")
 require("plugins.symbols-outline")
 require("plugins.trouble")
-require("plugins.dap")
-require("plugins.vscode")
+require("plugins.notice")
+--require("plugins.dap")
 

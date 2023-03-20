@@ -5,6 +5,8 @@ return require('packer').startup(function()
         	run = ':TSUpdate'
     	}
 
+ 	use  'Mofiqul/vscode.nvim'
+        
 
 	use {
 		'nvim-telescope/telescope.nvim',
@@ -49,7 +51,7 @@ return require('packer').startup(function()
         }
 
 	use {
-                'akinsho/bufferline.nvim',
+                'akinsho/bufferline.nvim', branch = 'main',
                 requires = {
                         'kyazdani42/nvim-web-devicons'
                 }
@@ -63,9 +65,14 @@ return require('packer').startup(function()
         }
 
         use 'arkav/lualine-lsp-progress'
-        use 'SmiteshP/nvim-gps'
+        use {
+                "SmiteshP/nvim-navic",
+                requires = "neovim/nvim-lspconfig"
+        }
 
-	use 'akinsho/toggleterm.nvim'
+	use {
+                'akinsho/toggleterm.nvim', branch = 'main',
+        }
 
 	use 'rmagatti/auto-session'
 	use 'rmagatti/session-lens'
@@ -90,10 +97,32 @@ return require('packer').startup(function()
                         require('Comment').setup()
                 end
         }
+        use({
+          "folke/noice.nvim",
+          config = function()
+            require("noice").setup()
+          end,
+          requires = {
+            -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+            "MunifTanjim/nui.nvim",
+            -- OPTIONAL:
+            --   `nvim-notify` is only needed, if you want to use the notification view.
+            --   If not available, we use `mini` as the fallback
+            "rcarriga/nvim-notify",
+            }
+        })
 	use 'mfussenegger/nvim-dap'
 	use 'rcarriga/nvim-dap-ui'
 	use 'leoluz/nvim-dap-go'
 
- 	use 'Mofiqul/vscode.nvim'
+
+        -- use({
+        --         'projekt0n/github-nvim-theme', tag = 'v0.0.7',
+        --         config = function()
+        --                 require('github-theme').setup({
+        --                         -- ...
+        --                 })
+        --         end
+        -- })
 
 end)

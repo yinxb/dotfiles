@@ -9,6 +9,7 @@ opt.termguicolors = true
 -- noselect: Do not select, force user to select one from the menu
 opt.completeopt = {'menu','menuone', 'noselect'}  -- set completeopt=menu,menuone,noselect
 opt.shortmess = opt.shortmess + 'c'
+opt.updatetime = 300
 
 -- Enable background buffers
 opt.hidden = true
@@ -17,6 +18,7 @@ opt.number = true
 opt.relativenumber = true
 
 -- Search
+opt.hlsearch = true
 -- Starts seaching as soon as typing
 opt.incsearch = true 
 opt.ignorecase = true
@@ -44,12 +46,11 @@ opt.splitright = true
 -- Command-line Completion mode
 -- opt.wildmode = {'list', 'longest'} 
 
---opt.swapfile = false -- Disable swap will cause auto session not working
+-- opt.swapfile = false -- Disable swap will cause auto session not working
 
--- opt.updatetime = 250
 -- vim.wo.singcolumn = "yes"
 
-opt.compatible = false
+-- opt.compatible = false
 opt.equalalways = false
 
 

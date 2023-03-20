@@ -1,5 +1,6 @@
 function map(mode, shortcut, command)
-	vim.api.nvim_set_keymap(mode, shortcut, command, { noremap = true, silent = true })
+	--vim.api.nvim_set_keymap(mode, shortcut, command, { noremap = true, silent = true })
+        vim.keymap.set(mode,shortcut, command) -- nvim 7.0+
 end
 
 function nmap(shortcut, command)
@@ -41,6 +42,10 @@ nmap('<space>=', ':bnext!<cr>')
 -- Clear highlights
 nmap('<c-L>', '<cmd>noh<cr>') 
 
+imap('<F1>', '<Esc>')
+nmap('<F1>', '<Esc>')
+vmap('<F1>', '<Esc>')
+cmap('<F1>', '<Esc>')
 
 -- Useful keymaps
 -- <c-w>v -- Split window vertically
