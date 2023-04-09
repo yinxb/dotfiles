@@ -13,7 +13,8 @@ require("bufferline").setup{
     -- always_show_bufferline = false,
     -- enforce_regular_tabs = true,
     show_buffer_icons = false,
-    show_close_icon = false,
+    show_close_icon = true,
+    close_icon = 'X',
   },
  }
 

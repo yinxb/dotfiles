@@ -50,12 +50,17 @@ return require('packer').startup(function()
                 }
         }
 
-	use {
-                'akinsho/bufferline.nvim', branch = 'main',
-                requires = {
-                        'kyazdani42/nvim-web-devicons'
-                }
+        use {
+                'romgrk/barbar.nvim', 
+                requires = 'nvim-web-devicons'
         }
+
+	-- use {
+ --                'akinsho/bufferline.nvim', branch = 'main',
+ --                requires = {
+ --                        'kyazdani42/nvim-web-devicons'
+ --                }
+ --        }
 
 	use {
                'nvim-lualine/lualine.nvim',
